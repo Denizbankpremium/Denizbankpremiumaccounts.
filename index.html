@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deniz Bank Internet Banking</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts for stylish typography -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-image: url('https://i.ibb.co/20tp5D9Y/YouTube.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #FFFFFF;
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+    }
+    .login-container {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      padding: 1rem;
+    }
+    .header {
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .header-logo {
+      height: 60px; /* Enlarged logo */
+      margin-bottom: 0.5rem;
+    }
+    .bank-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: #0000FF;
+  font-weight: 700;
+  text-shadow: 
+    -1px -1px 0 #FFFFFF, /* Top-left */
+     1px -1px 0 #FFFFFF, /* Top-right */
+     -1px 1px 0 #FFFFFF, /* Bottom-left */
+     1px 1px 0 #FFFFFF;  /* Bottom-right */
+}
+    .secure-icon::before {
+      content: '🔒';
+      margin-right: 8px;
+    }
+    button {
+      background: linear-gradient(90deg, #2a5298, #1e3c72);
+      transition: transform 0.3s, background 0.3s;
+    }
+    button:hover {
+      transform: scale(1.05);
+      background: linear-gradient(90deg, #1e3c72, #2a5298);
+    }
+    input:focus {
+      border-color: #2a5298;
+      box-shadow: 0 0 8px rgba(42, 82, 152, 0.5);
+    }
+    a:hover {
+      color: #ff6b6b; /* Stylish hover color */
+    }
+    @media (max-width: 640px) {
+      .login-container {
+        margin: 1rem;
+        padding: 1rem;
+      }
+      .header-logo {
+        height: 40px;
+      }
+      .bank-name {
+        font-size: 1.5rem;
+      }
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body class="flex flex-col justify-between">
+  <!-- Header -->
+  <header class="header bg-transparent">
+<img src="https://i.ibb.co/Zpz8pFTQ/download-1.jpg" alt="YourBank Logo" class="header-logo mx-auto rounded-full">
+    <div class="bank-name">DENIZ BANK</div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow flex items-center justify-center p-4">
+    <div class="login-container w-full max-w-md">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Log In to Your Account</h2>
+      
+      <!-- Login Form -->
+      <div class="space-y-5" id="login-form">
+        <div>
+          <label for="customer-id" class="block text-sm font-medium text-gray-700">Customer Number / TC ID</label>
+          <input type="text" id="customer-id" class="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:outline-none" placeholder="Enter your Customer Number or TC ID">
+        </div>
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+          <input type="password" id="password" class="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:outline-none" placeholder="Enter your password">
+        </div>
+        <div class="flex items-center">
+          <input type="checkbox" id="biometric" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+          <label for="biometric" class="ml-2 text-sm text-gray-600">Enable Biometric Login (Mobile)</label>
+        </div>
+        <div class="flex items-center">
+          <input type="checkbox" id="device-pairing" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+          <label for="device-pairing" class="ml-2 text-sm text-gray-600">Pair this device for secure access</label>
+        </div>
+        <button id="login-btn" class="w-full text-Green p-2 rounded-lg font-medium text-lg">Log In</button>
+      </div>
+
+      <!-- SMS Verification (Hidden by Default) -->
+      <div id="sms-verification" class="hidden mt-4">
+        <label for="sms-code" class="block text-sm font-medium text-gray-700">SMS Verification Code</label>
+        <input type="text" id="sms-code" class="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:outline-none" placeholder="Enter any 4-digit code (e.g., 1234)">
+        <p class="text-sm text-gray-500 mt-1">Note: This is a demo. Use any 4-digit code to proceed.</p>
+        <button id="verify-sms-btn" class="w-full text-white p-2 rounded-lg font-medium text-lg mt-2">Verify Code</button>
+      </div>
+
+      <!-- Success Message and Link (Hidden by Default) -->
+      <div id="success-message" class="hidden mt-4 text-center">
+        <p class="text-green-600 font-medium">Login successful! Proceed to your dashboard.</p>
+        <a id="dashboard-link" href="dashboard.html" class="text-blue-600 hover:underline text-sm font-medium">Go to Dashboard</a>
+      </div>
+
+      <!-- Links -->
+      <div class="mt-4 text-center space-y-2">
+        <a href="#" class="text-blue-600 hover:underline text-sm font-medium">Register for Internet Banking</a><br>
+        <a href="#" class="text-blue-600 hover:underline text-sm font-medium">Forgot Password?</a><br>
+        <a href="#" class="text-blue-600 hover:underline text-sm font-medium">Contact Support</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white p-4 text-center">
+    <p class="text-sm">© 2002 YourBank. All rights reserved. | <a href="#" class="hover:underline">Privacy Policy</a> | <a href="#" class="hover:underline">Terms of Service</a> | <a href="#" class="hover:underline">Contact Us</a></p>
+    <p class="text-sm mt-1 secure-icon">Secure Banking with YourBank | Powered by xAI</p>
+  </footer>
+
+  <!-- JavaScript for Interactivity -->
+  <script>
+    // Authorized credentials (EDIT THESE TO YOUR DESIRED VALUES)
+    const authorizedCredentials = [
+      { customerId: "12345678901", password: "Pass123!" },
+      { customerId: "98765432109", password: "Secure456!" },
+      { customerId: "11122233344", password: "Bank789!" }
+    ];
+
+    const loginBtn = document.getElementById('login-btn');
+    const smsVerification = document.getElementById('sms-verification');
+    const verifySmsBtn = document.getElementById('verify-sms-btn');
+    const customerId = document.getElementById('customer-id');
+    const password = document.getElementById('password');
+    const smsCode = document.getElementById('sms-code');
+    const successMessage = document.getElementById('success-message');
+    const loginForm = document.getElementById('login-form');
+
+    loginBtn.addEventListener('click', () => {
+      const inputId = customerId.value.trim();
+      const inputPassword = password.value.trim();
+
+      // Debug: Log entered credentials
+      console.log(`Entered ID: "${inputId}", Password: "${inputPassword}"`);
+
+      // Check if fields are empty
+      if (!inputId || !inputPassword) {
+        alert('Please enter both Customer Number/TC ID and Password.');
+        return;
+      }
+
+      // Check credentials
+      const isValid = authorizedCredentials.some(
+        cred => cred.customerId === inputId && cred.password === inputPassword
+      );
+
+      // Debug: Log validation result
+      console.log(`Credentials valid: ${isValid}`);
+
+      if (!isValid) {
+        alert('Invalid Customer Number/TC ID or Password.');
+        return;
+      }
+
+      // Simulate SMS verification for unpaired devices
+      if (!document.getElementById('device-pairing').checked) {
+        smsVerification.classList.remove('hidden');
+        loginForm.classList.add('hidden');
+        alert('An SMS code has been sent to your registered phone number.');
+      } else {
+        // Show success message and link
+        successMessage.classList.remove('hidden');
+        loginForm.classList.add('hidden');
+        smsVerification.classList.add('hidden');
+      }
+    });
+
+    verifySmsBtn.addEventListener('click', () => {
+      if (smsCode.value.length === 4 && !isNaN(smsCode.value)) {
+        // Show success message and link
+        successMessage.classList.remove('hidden');
+        loginForm.classList.add('hidden');
+        smsVerification.classList.add('hidden');
+      } else {
+        alert('Please enter a valid 4-digit SMS code.');
+      }
+    });
+  </script>
+</body>
+
+</html>
